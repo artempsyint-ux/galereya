@@ -19,7 +19,7 @@
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:var(--ink);color:var(--paper);font-family:"Golos Text",system-ui,Arial,sans-serif;overflow:hidden}
-#scene{position:fixed;inset:0;touch-action:none;cursor:grab}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
 #scene.dragging{cursor:grabbing}
 #vignette{position:fixed;inset:0;pointer-events:none;
   background:radial-gradient(115% 85% at 50% 45%,transparent 45%,rgba(0,0,0,.72) 100%)}
@@ -96,6 +96,9 @@ body{margin:0;background:var(--ink);color:var(--paper);font-family:"Golos Text",
   box-shadow:0 14px 34px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.55)}
 #enter-btn:hover{background:linear-gradient(180deg,#f2d99f,#c9a24a)}
 
+@media (max-aspect-ratio:1/1){
+  .door .pane{background-size:contain;background-color:#3a0f11}
+}
 @media (max-width:680px){
   .enter{bottom:7vh}
   #enter-btn{padding:.9rem 1.8rem;font-size:.76rem}
@@ -594,7 +597,7 @@ function goToBook(ci,bj){
   const books=CHAPTERS[cur].books;
   bookIdx=Math.max(0,Math.min(books.length-1,bj));
   navLock=true;placeLamps(cur);
-  const side=sideOf(cur), D=5.2;
+  const side=sideOf(cur), D=ROWSOF(books.length)===1?5.2:4.3;
   const p=(ARTPOS[cur]||[])[bookIdx];
   tZ=p?p.z:(zOf(cur)-spanOf(books.length,bookIdx));
   tX=(p?p.x:side*WH)-side*D;
