@@ -425,6 +425,7 @@ endW.position.set(0,HGT/2,zOf(N-1)-BAYW[N-1]/2-2);scene.add(endW);
 
 const pickables=[];
 const ARTPOS=[];
+const ROPES=[];
 const LAMPS=[];
 for(let k=0;k<5;k++){
   const l=new THREE.PointLight(0xffe6bb,1.35,24,2);
@@ -490,14 +491,15 @@ CHAPTERS.forEach((ch,i)=>{
   for(const sx of [-ropeW/2,ropeW/2]){
     const post=new THREE.Mesh(new THREE.CylinderGeometry(.045,.055,.95,12),
       new THREE.MeshLambertMaterial({color:0xa8873f,emissive:0x1a1406}));
-    post.position.set(sx,.47,1.75);g.add(post);
+    post.position.set(sx,.47,1.75);g.add(post);ROPES.push(post);
     const knob=new THREE.Mesh(new THREE.SphereGeometry(.075,12,10),
       new THREE.MeshLambertMaterial({color:0xc9a24a,emissive:0x241b07}));
-    knob.position.set(sx,.99,1.75);g.add(knob);
+    knob.position.set(sx,.99,1.75);g.add(knob);ROPES.push(knob);
   }
   const rope=new THREE.Mesh(new THREE.CylinderGeometry(.038,.038,ropeW,10),
     new THREE.MeshLambertMaterial({color:0x5c1f22,emissive:0x140506}));
   rope.rotation.z=Math.PI/2;rope.position.set(0,.86,1.75);g.add(rope);
+  ROPES.push(rope);
   const pool=new THREE.Mesh(new THREE.CircleGeometry(3.0,40),
     new THREE.MeshBasicMaterial({map:(window.__pool||(window.__pool=poolTexture())),transparent:true,
       blending:THREE.AdditiveBlending,depthWrite:false}));
@@ -597,7 +599,7 @@ function goToBook(ci,bj){
   const books=CHAPTERS[cur].books;
   bookIdx=Math.max(0,Math.min(books.length-1,bj));
   navLock=true;placeLamps(cur);
-  const side=sideOf(cur), D=ROWSOF(books.length)===1?5.2:4.3;
+  const side=sideOf(cur), D=ROWSOF(books.length)===1?4.4:3.7;
   const p=(ARTPOS[cur]||[])[bookIdx];
   tZ=p?p.z:(zOf(cur)-spanOf(books.length,bookIdx));
   tX=(p?p.x:side*WH)-side*D;
@@ -661,7 +663,8 @@ function resize(){
   const a=innerWidth/innerHeight;
   camera.aspect=a;
   PORTRAIT=a<0.95;                     // телефон вертикально: широкую стену целиком не показать
-  camera.fov=PORTRAIT?58:50;
+  camera.fov=PORTRAIT?47:50;
+  if(typeof ROPES!=='undefined')ROPES.forEach(r=>r.visible=!PORTRAIT);   // на телефоне канат перед картиной только мешает
   camera.updateProjectionMatrix();
   if(typeof cur==='number'&&typeof goTo==='function'){
     PORTRAIT?goToBook(cur,Math.min(bookIdx,CHAPTERS[cur].books.length-1)):goTo(cur);
@@ -702,7 +705,7 @@ doors.addEventListener('click',openDoors);
 addEventListener('keydown',e=>{if(!doorsOpened&&(e.key==='Enter'||e.key===' '))openDoors()});
 
 resize();
-(document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{buildRooms();goTo(0);placeLamps(0);tick()});
+(document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{buildRooms();ROPES.forEach(r=>r.visible=!PORTRAIT);goTo(0);placeLamps(0);tick()});
 </script>
 
 </html>
